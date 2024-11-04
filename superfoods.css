@@ -48,6 +48,18 @@
 
 /********* You can start writing your CSS below this line: **********/
 
+.playertablecard {
+    display: inline-block;
+    position: relative;
+    margin-top: 5px;
+    width: 167px; 
+    height: 234px;
+    background-image: url('img/numbers.png'); /* temp hack to see it */
+}
+
+.small-caps {
+    font-variant-caps: small-caps;
+}
 
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
