@@ -49,17 +49,27 @@
 /********* You can start writing your CSS below this line: **********/
 
 .playertablecard {
-    display: inline-block;
-    position: relative;
-    margin-top: 5px;
-    width: 167px; 
+    width: 167px;
     height: 234px;
-    background-image: url('img/numbers.png'); /* temp hack to see it */
+    background-image: url('img/numbers.png');
+    /* temp hack to see it */
 }
 
 .small-caps {
     font-variant-caps: small-caps;
 }
+
+#myhand {
+    height: fit-content !important;
+}
+
+.stockitem {
+    position: relative !important;
+    top: 0px !important;
+    left: 0px !important;
+    height: 234px !important;
+}
+
 
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
@@ -79,6 +89,74 @@
     }
 */
 
+/** Table layout **/
+#superfoods_content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
 
+#playertables {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
 
+.playertablename {
+    font-weight: bold;
+}
 
+.playertable {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+    gap: 10px;
+}
+
+.playertablecard_row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.playertablecard_thumbnail {
+    width: 167px;
+    height: 234px;
+    background-image: url('img/numbers.png');
+    /* temp hack to see it */
+}
+
+/* 
+.playertable_N {
+    left: 50%;
+    top: 2%;
+    transform: translateX(-50%);
+}
+
+.playertable_S {
+    left: 50%;
+    bottom: 2%;
+    transform: translateX(-50%);
+}
+
+.playertable_W {
+    left: 2%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.playertable_E {
+    right: 2%;
+    top: 50%;
+    transform: translateY(-50%);
+} */
