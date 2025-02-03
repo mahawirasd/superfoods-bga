@@ -22,27 +22,67 @@ const DIRECTIONS = {
 };
 
 const INIT_GLOBAL_STATE = {
-    CARD_WIDTH: 167.259259,
+    CARDS: [],
+}
+
+const STATIC_VALUE = {
+    CARD_WIDTH: 167.43333,
     CARD_HEIGHT: 234,
-    NUMBERS_SPRITE_VALUE: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 11, 11, 12, 12],
-    NUMBERS_SPRITE_NAME: ['WHITE_PASTA', 'WHITE_RICE', 'WHOLEGRAIN_PASTA', 'ROAST_POTATO', 'BAKED_SWEET_POTATO', 'BROWN_RICE', 'BLACK_RICE', 'LAMB_CHOP', 'ROAST_CHICKEN', 'CATFISH', 'TUNA', 'SALMON', 'ONIONS', 'ROASTED_PEANUTS', 'RED_BEANS', 'CHICKPEAS', 'ROASTED_CASHEW', 'PEPPERS', 'LENTILS', 'MUSHROOMS', 'ROASTED_ALMONDS', 'TOFU', 'CORN', 'TEMPEH', 'TOMATO', 'SEAWEED', 'SPINACH'],
-    ACTION_SPRITE_VALUE: [100, 200, 300],
-    ACTION_SPRITE_NAME: ['FILLER', 'COCKROACH', 'STEAL'],
 }
 
-const CARD_TYPE = {
-    NUMBERS: 'NUMBERS',
-    ACTIONS: 'ACTIONS',
-    PLATE: 'PLATE',
-    BACK: 'BACK',
+const CARD = {
+    PLAYABLE: {
+        KEY: 'PLAYABLE',
+        TYPE: [2, 2, 2,
+            1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1,
+            1, 1],
+        TYPE_ARGS: [1, 2, 3,
+            1, 2, 3, 4, 5,
+            6, 7, 8, 9, 10,
+            11, 12, 13, 14, 15,
+            16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25,
+            26, 27],
+        NAME: ['FILLER', 'COCKROACH', 'STEAL',
+            'WHITE_PASTA', 'WHITE_RICE', 'WHOLEGRAIN_PASTA', 'ROAST_POTATO', 'BAKED_SWEET_POTATO', 'BROWN_RICE', 'BLACK_RICE', 'LAMB_CHOP', 'ROAST_CHICKEN', 'CATFISH', 'TUNA', 'SALMON', 'ONIONS', 'ROASTED_PEANUTS', 'RED_BEANS', 'CHICKPEAS', 'ROASTED_CASHEW', 'PEPPERS', 'LENTILS', 'MUSHROOMS', 'ROASTED_ALMONDS', 'TOFU', 'CORN', 'TEMPEH', 'TOMATO', 'SEAWEED', 'SPINACH'],
+        VALUE: [1, 2, 3,
+            1, 1, 2, 2, 3,
+            3, 4, 4, 5, 5,
+            6, 6, 7, 7, 7,
+            8, 8, 8, 9, 9,
+            9, 11, 11, 11, 11,
+            12, 12]
+    },
+    PLATE: {
+        KEY: 'PLATE',
+        TYPE: [3],
+        TYPE_ARGS: [1],
+        NAME: ['PLATE'],
+        VALUE: [1]
+    },
+    BACK: {
+        KEY: 'BACK',
+        TYPE: [4],
+        TYPE_ARGS: [1],
+        NAME: ['BACK'],
+        VALUE: [1]
+    },
 }
 
+const getPlayableCardId = (type, type_args) => {
+    return Number(type) * 100 + Number(type_args);
+}
 
 define([
     "dojo", "dojo/_base/declare",
     "ebg/core/gamegui",
     "ebg/counter",
-    "ebg/stock"
+    "ebg/stock",
+    "ebg/zone"
 ],
     function (dojo, declare) {
         return declare("bgagame.superfoods", ebg.core.gamegui, {
@@ -50,37 +90,40 @@ define([
                 console.log('superfoods constructor');
                 console.log(this);
 
-                this.GLOBAL_STATE = { ...INIT_GLOBAL_STATE };
                 // Here, you can init the global variables of your user interface
                 // Example:
-                // this.myGlobalValue = 0;
+                // this.myGlobalValue = 1;
 
-                // this.GLOBAL_STATE.DECK = new ebg.stock();
-                // this.GLOBAL_STATE.DECK.create(this, $('deck'), this.GLOBAL_STATE.CARD_WIDTH, this.GLOBAL_STATE.CARD_HEIGHT);
+                this.GLOBAL_STATE = { ...INIT_GLOBAL_STATE };
 
-                // for (let i = 0; i < this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE.length; i++) {
-                //     let card_value = this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[i];
-                //     let card_name = this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[i];
-                //     let card_type_id = card_value + '_' + card_name;
-                //     this.GLOBAL_STATE.DECK.addItemType(
-                //         card_type_id,
-                //         card_value, g_gamethemeurl + 'img/numbers.png', i);
-                //     for (let j = 0; j < 3; j++) {
-                //         this.GLOBAL_STATE.DECK.addToStockWithId(card_type_id, card_type_id + '_' + j);
-                //     }
+                Object.entries(CARD).forEach(([key, value]) => {
+                    this.GLOBAL_STATE.CARDS[value.KEY] = new ebg.stock();
+                    this.GLOBAL_STATE.CARDS[value.KEY].create(this, $('my_game_card_' + value.KEY.toLowerCase()), STATIC_VALUE.CARD_WIDTH, STATIC_VALUE.CARD_HEIGHT);
+                    this.GLOBAL_STATE.CARDS[value.KEY].image_items_per_row = value.VALUE.length;
+
+                    for (let i = 1; i < value.VALUE.length; i++) {
+                        let card_value = value.VALUE[i];
+                        let card_type_id = getPlayableCardId(value.TYPE[i], value.TYPE_ARGS[i]);
+                        this.GLOBAL_STATE.CARDS[value.KEY].addItemType(
+                            card_type_id,
+                            card_value, g_gamethemeurl + 'img/' + value.KEY.toLowerCase() + '.png', i);
+                    }
+                })
+
+                console.log(this.GLOBAL_STATE.CARDS);
+
+                // for (let player_id in Object.keys(gamedatas.players)) {
+                //     let plate_1 = 'player_plate_1_' + player_id;
+                //     let plate_2 = 'player_plate_2_' + player_id;
+                //     let plate_3 = 'player_plate_3_' + player_id;
+
+                //     this.GLOBAL_STATE.PLAYER_ZONE[player_id].PLATE[1] = plate_1;
+                //     this.GLOBAL_STATE.PLAYER_ZONE[player_id].PLATE[1] = plate_2;
+                //     this.GLOBAL_STATE.PLAYER_ZONE[player_id].PLATE[2] = plate_3;
+
+                //     console.log(player_id);
                 // }
 
-                // for (let i = 0; i < this.GLOBAL_STATE.ACTION_SPRITE_VALUE.length; i++) {
-                //     let card_value = this.GLOBAL_STATE.ACTION_SPRITE_VALUE[i];
-                //     let card_name = this.GLOBAL_STATE.ACTION_SPRITE_NAME[i];
-                //     let card_type_id = card_value + '_' + card_name;
-                //     this.GLOBAL_STATE.DECK.addItemType(
-                //         card_type_id,
-                //         card_value, g_gamethemeurl + 'img/numbers.png', i);
-                //     for (let j = 0; j < 6; j++) {
-                //         this.GLOBAL_STATE.DECK.addToStockWithId(card_type_id, card_type_id + '_' + j);
-                //     }
-                // }
             },
 
             /*
@@ -109,49 +152,43 @@ define([
 
                 // TODO: Set up your game interface here, according to "gamedatas"
 
-                this.GLOBAL_STATE.PLAYER_HAND = new ebg.stock();
-                this.GLOBAL_STATE.PLAYER_HAND.create(this, $('myhand'), this.GLOBAL_STATE.CARD_WIDTH, this.GLOBAL_STATE.CARD_HEIGHT);
-
-                this.GLOBAL_STATE.PLAYER_HAND.image_items_per_row = 27;
-
-                for (let i = 0; i < this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE.length; i++) {
-                    let card_value = this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[i];
-                    let card_name = this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[i];
-                    let card_type_id = card_value + '_' + card_name;
-                    this.GLOBAL_STATE.PLAYER_HAND.addItemType(
-                        card_type_id,
-                        card_value, g_gamethemeurl + 'img/numbers.png', i);
+                for (var i in this.gamedatas['players'][this.player_id]['hand']) {
+                    var current_card = this.gamedatas['players'][this.player_id]['hand'][i];
+                    let card_type_id = getPlayableCardId(current_card.type, current_card.type_arg);
+                    console.log(current_card, card_type_id, this.GLOBAL_STATE.CARDS[CARD.PLAYABLE.KEY]);
+                    this.GLOBAL_STATE.CARDS[CARD.PLAYABLE.KEY].addToStockWithId(card_type_id, current_card.id, current_card.location);
                 }
 
-                this.GLOBAL_STATE.PLAYER_HAND.addToStock(this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[1] + "_" + this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[1]);
-                this.GLOBAL_STATE.PLAYER_HAND.addToStock(this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[3] + "_" + this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[3]);
-                this.GLOBAL_STATE.PLAYER_HAND.addToStock(this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[5] + "_" + this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[5]);
 
-                this.GLOBAL_STATE.PLAYER_HAND.setOverlap(0, 0);
-                this.GLOBAL_STATE.PLAYER_HAND.updateDisplay();
+                // this.GLOBAL_STATE.STOCK.addToStock(this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[1] + "_" + this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[1]);
+                // this.GLOBAL_STATE.STOCK.addToStock(this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[3] + "_" + this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[3]);
+                // this.GLOBAL_STATE.STOCK.addToStock(this.GLOBAL_STATE.NUMBERS_SPRITE_VALUE[5] + "_" + this.GLOBAL_STATE.NUMBERS_SPRITE_NAME[5]);
 
-                let playertablesHTML = Object.values(gamedatas.players).map((player, index) => {
-                    console.log(player, index)
-                    console.log(DIRECTIONS, gamedatas.players, index)
-                    return (`
-                    <div class="playertable whiteblock playertable_${DIRECTIONS[Object.keys(gamedatas.players).length][index]}">
-                        <div class="playertablename" style="color:#${player.color};">
-                            <span class="dealer_token" id="dealer_token_p${player.id}">🃏</span> ${player.name}
-                        </div>
-                        <div class="playertablecard_row" id="playertablecard_${player.id}">
-                            <div class="playertablecard_thumbnail"></div>
-                            <div class="playertablecard_thumbnail"></div>
-                            <div class="playertablecard_thumbnail"></div>
-                            <div class="playertablecard_thumbnail"></div>
-                            <div class="playertablecard_thumbnail"></div>
-                        </div>
-                        <div class="playertablename" id="hand_score_wrap_${player.id}">
-                            <span class="hand_score_label"></span> <span id="hand_score_${player.id}"></span>
-                        </div>
-                    </div>
-                `)
-                }).join('');
-                document.getElementById("playertables").innerHTML = playertablesHTML;
+                // this.GLOBAL_STATE.STOCK.setOverlap(1, 1);
+                // this.GLOBAL_STATE.STOCK.updateDisplay();
+
+                // let playertablesHTML = Object.values(gamedatas.players).map((player, index) => {
+                //     console.log(player, index)
+                //     console.log(DIRECTIONS, gamedatas.players, index)
+                //     return (`
+                //     <div class="playertable whiteblock playertable_${DIRECTIONS[Object.keys(gamedatas.players).length][index]}">
+                //         <div class="playertablename" style="color:#${player.color};">
+                //             <span class="dealer_token" id="dealer_token_p${player.id}">🃏</span> ${player.name}
+                //         </div>
+                //         <div class="playertablecard_row" id="playertablecard_${player.id}">
+                //             <div class="playertablecard_thumbnail"></div>
+                //             <div class="playertablecard_thumbnail"></div>
+                //             <div class="playertablecard_thumbnail"></div>
+                //             <div class="playertablecard_thumbnail"></div>
+                //             <div class="playertablecard_thumbnail"></div>
+                //         </div>
+                //         <div class="playertablename" id="hand_score_wrap_${player.id}">
+                //             <span class="hand_score_label"></span> <span id="hand_score_${player.id}"></span>
+                //         </div>
+                //     </div>
+                // `)
+                // }).join('');
+                // document.getElementById("playertables").innerHTML = playertablesHTML;
 
                 // Setup game notifications to handle (see "setupNotifications" method below)
                 this.setupNotifications();
@@ -319,7 +356,7 @@ define([
                 //            during 3 seconds after calling the method in order to let the players
                 //            see what is happening in the game.
                 // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-                // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
+                // this.notifqueue.setSynchronous( 'cardPlayed', 3111 );
                 // 
             },
 

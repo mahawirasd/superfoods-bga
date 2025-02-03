@@ -29,10 +29,13 @@
 This is your game interface. You can edit this HTML in your ".tpl" file.
 <div id="superfoods_content">
     <div id="playertables"></div>
+    <div id="my_game_card_playable" style="display: block;"></div>
+    <div id="my_game_card_plate" style="display: none;"></div>
+    <div id="my_game_card_back" style="display: none;"></div>
 
     <div id="myhand_wrap" class="whiteblock playertable">
         <h3 class="small-caps">My Hand</h3>
-        <div id="myhand" class="playertablecard_row"></div>
+        <div id="hand" class="playertablecard_row"></div>
     </div>
 </div>
 

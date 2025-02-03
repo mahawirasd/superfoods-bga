@@ -44,7 +44,7 @@ $this->card_types = array(
   )
 );
 
-$this->sprite_card_names = array(
+$this->number_card_names = array(
   1 => array(
     "card_name" => clienttranslate("WHITE_PASTA"),
     "card_name_tr" => $this->_('WHITE_PASTA'),
@@ -182,7 +182,7 @@ $this->sprite_card_names = array(
   )
 );
 
-$this->action_card_names = array(
+$this->actions_card_names = array(
   1 => array(
     "card_name" => clienttranslate("FILLER"),
     "card_name_tr" => $this->_('FILLER')

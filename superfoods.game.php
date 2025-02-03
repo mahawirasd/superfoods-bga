@@ -19,10 +19,15 @@
 
 
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
-
-
 class SuperFoods extends Table
 {
+    private $cards;
+
+    // variable that is defined from material.inc.php file
+    protected array $card_types;
+    protected array $number_card_names;
+    protected array $actions_card_names;
+
     function __construct()
     {
         // Your global variables labels:
@@ -34,13 +39,16 @@ class SuperFoods extends Table
         parent::__construct();
 
         $this->initGameStateLabels(array(
-            //    "my_first_global_variable" => 10,
+            // "my_first_global_variable" => 10,
             //    "my_second_global_variable" => 11,
             //      ...
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
         ));
+
+        $this->cards = $this->getNew("module.common.deck");
+        $this->cards->init("card");
     }
 
     protected function getGameName()
@@ -89,7 +97,31 @@ class SuperFoods extends Table
 
         // TODO: setup the initial game situation here
 
+        // Create cards
+        $cards = array();
+        foreach ($this->card_types as $card_type_id => $card_type) {
+            if ($card_type_id == 1) {
+                foreach ($this->number_card_names as $number_card_name_id => $number_card_name) {
+                    $cards[] = array('type' => $card_type_id, 'type_arg' => $number_card_name_id, 'nbr' => 3);
+                }
+            } else if ($card_type_id == 2) {
+                foreach ($this->actions_card_names as $actions_card_name_id => $actions_card_name) {
+                    $cards[] = array('type' => $card_type_id, 'type_arg' => $actions_card_name_id, 'nbr' => 6);
+                }
+            }
+        }
 
+        $this->cards->createCards($cards, 'deck');
+        $this->cards->shuffle('deck');
+        if (count($players) == 2) {
+            $this->cards->pickCardsForLocation(44, 'deck', 'discard');
+        } else if (count($players) == 3) {
+            $this->cards->pickCardsForLocation(21, 'deck', 'discard');
+        }
+        foreach ($players as $player_id => $player) {
+            $this->cards->pickCards(5, 'deck', $player_id);
+        }
+        $this->cards->pickCardsForLocation(3, 'deck', 'pantry');
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
@@ -105,7 +137,7 @@ class SuperFoods extends Table
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas()
+    protected function getAllDatas(): array
     {
         $result = array();
 
@@ -116,7 +148,15 @@ class SuperFoods extends Table
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = $this->getCollectionFromDb($sql);
 
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+
+        $result['deck'] = $this->cards->getCardsInLocation('deck');
+        $result['discard'] = $this->cards->getCardsInLocation('discard');
+        foreach ($result['players'] as $player_id => $player) {
+            $result['players'][$player_id]['hand'] = $this->cards->getCardsInLocation('hand', $player_id);
+        }
+        $result['pantry'] = $this->cards->getCardsInLocation('pantry');
 
         return $result;
     }
@@ -251,7 +291,7 @@ class SuperFoods extends Table
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn($state, $active_player)
+    function zombieTurn($state, $active_player): void
     {
         $statename = $state['name'];
 
