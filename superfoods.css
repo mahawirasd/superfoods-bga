@@ -48,48 +48,7 @@
 
 /********* You can start writing your CSS below this line: **********/
 
-.playertablecard {
-    width: 167px;
-    height: 234px;
-    background-image: url('img/numbers.png');
-    /* temp hack to see it */
-}
-
-.small-caps {
-    font-variant-caps: small-caps;
-}
-
-#hand {
-    height: fit-content !important;
-}
-
-.stockitem {
-    position: relative !important;
-    top: 0px !important;
-    left: 0px !important;
-    height: 234px !important;
-}
-
-
-/*
-    Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
-
-    .white_token {
-        background-image: url('img/tokens.png');
-        background-position: 0px 0px;
-    }
-    .black_token {
-        background-image: url('img/tokens.png');
-        background-position: -20px 0px;
-    }
-    .token {
-        width: 20px;
-        height: 20px;
-        background-repeat: none;
-    }
-*/
-
-/** Table layout **/
+/** General layout **/
 #superfoods_content {
     position: relative;
     display: flex;
@@ -100,10 +59,22 @@
     height: 100%;
 }
 
-#playertables {
+.small-caps {
+    font-variant-caps: small-caps;
+}
+
+/** Hand **/
+#hand {
     position: relative;
     display: flex;
     flex-direction: column;
+    margin: 0 auto;
+}
+
+/** Player Table layout **/
+
+#playertables {
+    position: relative;
     margin: 0 auto;
 }
 
@@ -123,18 +94,63 @@
     gap: 10px;
 }
 
-.playertablecard_row {
+.playertable .playertablecard_plate {
+    margin-top: -110px;
+    z-index: -1;
+}
+
+.flex_row {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 4px;
 }
 
-.playertablecard_thumbnail {
+.flex_col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.flex_col .overlap_col:first-child {
+    margin-top: 0;
+}
+
+.flex_col .overlap_col {
+    margin-top: -150px;
+}
+
+.playertablecard_numbers {
     width: 167px;
     height: 234px;
     background-image: url('img/numbers.png');
     /* temp hack to see it */
 }
+
+.playertablecard_actions {
+    width: 167px;
+    height: 234px;
+    background-image: url('img/actions.png');
+    /* temp hack to see it */
+}
+
+.playertablecard_plate_left {
+    height: 167px;
+    width: 234px;
+    background-image: url('img/plate.png');
+    /* temp hack to see it */
+}
+
+.playertablecard_plate_right {
+    height: 167px;
+    width: 234px;
+    background-image: url('img/plate.png');
+    transform: rotate(180deg);
+    /* temp hack to see it */
+}
+
 
 /* 
 .playertable_N {

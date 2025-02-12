@@ -14,42 +14,52 @@
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *
  */
-const DIRECTIONS = {
-    1: ['S'],
-    2: ['W', 'E'],
-    3: ['S', 'W', 'E'],
-    4: ['S', 'W', 'N', 'E'],
-};
-
-const INIT_GLOBAL_STATE = {
-    CARDS: [],
-}
 
 const STATIC_VALUE = {
-    CARD_WIDTH: 167.43333,
+    CARD_WIDTH: 167.259259,
     CARD_HEIGHT: 234,
 }
 
 const CARD = {
-    PLAYABLE: {
-        KEY: 'PLAYABLE',
-        TYPE: [2, 2, 2,
-            1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1,
-            1, 1],
-        TYPE_ARGS: [1, 2, 3,
+    // PLAYABLE: {
+    //     KEY: 'PLAYABLE',
+    //     TYPE: [2, 2, 2,
+    //         1, 1, 1, 1, 1,
+    //         1, 1, 1, 1, 1,
+    //         1, 1, 1, 1, 1,
+    //         1, 1, 1, 1, 1,
+    //         1, 1, 1, 1, 1,
+    //         1, 1],
+    //     TYPE_ARGS: [1, 2, 3,
+    //         1, 2, 3, 4, 5,
+    //         6, 7, 8, 9, 10,
+    //         11, 12, 13, 14, 15,
+    //         16, 17, 18, 19, 20,
+    //         21, 22, 23, 24, 25,
+    //         26, 27],
+    //     NAME: ['FILLER', 'COCKROACH', 'STEAL',
+    //         'WHITE_PASTA', 'WHITE_RICE', 'WHOLEGRAIN_PASTA', 'ROAST_POTATO', 'BAKED_SWEET_POTATO', 'BROWN_RICE', 'BLACK_RICE', 'LAMB_CHOP', 'ROAST_CHICKEN', 'CATFISH', 'TUNA', 'SALMON', 'ONIONS', 'ROASTED_PEANUTS', 'RED_BEANS', 'CHICKPEAS', 'ROASTED_CASHEW', 'PEPPERS', 'LENTILS', 'MUSHROOMS', 'ROASTED_ALMONDS', 'TOFU', 'CORN', 'TEMPEH', 'TOMATO', 'SEAWEED', 'SPINACH'],
+    //     VALUE: [1, 2, 3,
+    //         1, 1, 2, 2, 3,
+    //         3, 4, 4, 5, 5,
+    //         6, 6, 7, 7, 7,
+    //         8, 8, 8, 9, 9,
+    //         9, 11, 11, 11, 11,
+    //         12, 12]
+    // },
+    NUMBERS: {
+        KEY: 'NUMBERS',
+        TYPE: 1,
+        TYPE_ARGS: [
             1, 2, 3, 4, 5,
             6, 7, 8, 9, 10,
             11, 12, 13, 14, 15,
             16, 17, 18, 19, 20,
             21, 22, 23, 24, 25,
             26, 27],
-        NAME: ['FILLER', 'COCKROACH', 'STEAL',
+        NAME: [
             'WHITE_PASTA', 'WHITE_RICE', 'WHOLEGRAIN_PASTA', 'ROAST_POTATO', 'BAKED_SWEET_POTATO', 'BROWN_RICE', 'BLACK_RICE', 'LAMB_CHOP', 'ROAST_CHICKEN', 'CATFISH', 'TUNA', 'SALMON', 'ONIONS', 'ROASTED_PEANUTS', 'RED_BEANS', 'CHICKPEAS', 'ROASTED_CASHEW', 'PEPPERS', 'LENTILS', 'MUSHROOMS', 'ROASTED_ALMONDS', 'TOFU', 'CORN', 'TEMPEH', 'TOMATO', 'SEAWEED', 'SPINACH'],
-        VALUE: [1, 2, 3,
+        VALUE: [
             1, 1, 2, 2, 3,
             3, 4, 4, 5, 5,
             6, 6, 7, 7, 7,
@@ -57,16 +67,23 @@ const CARD = {
             9, 11, 11, 11, 11,
             12, 12]
     },
+    ACTIONS: {
+        KEY: 'ACTIONS',
+        TYPE: 2,
+        TYPE_ARGS: [1, 2, 3],
+        NAME: ['FILLER', 'COCKROACH', 'STEAL'],
+        VALUE: [1, 2, 3]
+    },
     PLATE: {
         KEY: 'PLATE',
-        TYPE: [3],
+        TYPE: 3,
         TYPE_ARGS: [1],
         NAME: ['PLATE'],
         VALUE: [1]
     },
     BACK: {
         KEY: 'BACK',
-        TYPE: [4],
+        TYPE: 4,
         TYPE_ARGS: [1],
         NAME: ['BACK'],
         VALUE: [1]
@@ -93,24 +110,6 @@ define([
                 // Here, you can init the global variables of your user interface
                 // Example:
                 // this.myGlobalValue = 1;
-
-                this.GLOBAL_STATE = { ...INIT_GLOBAL_STATE };
-
-                Object.entries(CARD).forEach(([key, value]) => {
-                    this.GLOBAL_STATE.CARDS[value.KEY] = new ebg.stock();
-                    this.GLOBAL_STATE.CARDS[value.KEY].create(this, $('my_game_card_' + value.KEY.toLowerCase()), STATIC_VALUE.CARD_WIDTH, STATIC_VALUE.CARD_HEIGHT);
-                    this.GLOBAL_STATE.CARDS[value.KEY].image_items_per_row = value.VALUE.length;
-
-                    for (let i = 1; i < value.VALUE.length; i++) {
-                        let card_value = value.VALUE[i];
-                        let card_type_id = getPlayableCardId(value.TYPE[i], value.TYPE_ARGS[i]);
-                        this.GLOBAL_STATE.CARDS[value.KEY].addItemType(
-                            card_type_id,
-                            card_value, g_gamethemeurl + 'img/' + value.KEY.toLowerCase() + '.png', i);
-                    }
-                })
-
-                console.log(this.GLOBAL_STATE.CARDS);
 
                 // for (let player_id in Object.keys(gamedatas.players)) {
                 //     let plate_1 = 'player_plate_1_' + player_id;
@@ -152,11 +151,15 @@ define([
 
                 // TODO: Set up your game interface here, according to "gamedatas"
 
-                for (var i in this.gamedatas['players'][this.player_id]['hand']) {
-                    var current_card = this.gamedatas['players'][this.player_id]['hand'][i];
-                    let card_type_id = getPlayableCardId(current_card.type, current_card.type_arg);
-                    console.log(current_card, card_type_id, this.GLOBAL_STATE.CARDS[CARD.PLAYABLE.KEY]);
-                    this.GLOBAL_STATE.CARDS[CARD.PLAYABLE.KEY].addToStockWithId(card_type_id, current_card.id, current_card.location);
+                // for (var i in this.gamedatas['players'][this.player_id]['hand']) {
+                //     var current_card = this.gamedatas['players'][this.player_id]['hand'][i];
+                //     let card_type_id = getPlayableCardId(current_card.type, current_card.type_arg);
+                //     console.log(current_card, card_type_id, this.GLOBAL_STATE.CARDS[CARD.PLAYABLE.KEY]);
+                //     this.GLOBAL_STATE.CARDS[CARD.PLAYABLE.KEY].addToStockWithId(card_type_id, current_card.id, current_card.location);
+                // }
+
+                for (var player_id in this.gamedatas['players']) {
+
                 }
 
 
@@ -167,28 +170,64 @@ define([
                 // this.GLOBAL_STATE.STOCK.setOverlap(1, 1);
                 // this.GLOBAL_STATE.STOCK.updateDisplay();
 
-                // let playertablesHTML = Object.values(gamedatas.players).map((player, index) => {
-                //     console.log(player, index)
-                //     console.log(DIRECTIONS, gamedatas.players, index)
-                //     return (`
-                //     <div class="playertable whiteblock playertable_${DIRECTIONS[Object.keys(gamedatas.players).length][index]}">
-                //         <div class="playertablename" style="color:#${player.color};">
-                //             <span class="dealer_token" id="dealer_token_p${player.id}">🃏</span> ${player.name}
-                //         </div>
-                //         <div class="playertablecard_row" id="playertablecard_${player.id}">
-                //             <div class="playertablecard_thumbnail"></div>
-                //             <div class="playertablecard_thumbnail"></div>
-                //             <div class="playertablecard_thumbnail"></div>
-                //             <div class="playertablecard_thumbnail"></div>
-                //             <div class="playertablecard_thumbnail"></div>
-                //         </div>
-                //         <div class="playertablename" id="hand_score_wrap_${player.id}">
-                //             <span class="hand_score_label"></span> <span id="hand_score_${player.id}"></span>
-                //         </div>
-                //     </div>
-                // `)
-                // }).join('');
-                // document.getElementById("playertables").innerHTML = playertablesHTML;
+                // show my hand
+                let currentPlayer = Object.values(gamedatas.players).find(player => player.id == this.player_id);
+                let currentPlayerHandHTML =
+                    `
+                        <div id="zone_${currentPlayer.id}" class="playertable whiteblock">
+                            <div class="playertablename" style="color:#${currentPlayer.color};">
+                                Hand
+                            </div>
+                            <div class="flex_row" id="playertablecard_${currentPlayer.id}">
+                            ${Object.values(currentPlayer.hand).map((card, index) => {
+                        return (`
+                                    <div 
+                                        key="${index}" 
+                                        class="playertablecard_${Object.values(CARD).filter(x => Number(x.TYPE) == Number(card.type))[0]?.KEY.toLowerCase()}" 
+                                        style="background-position: -${STATIC_VALUE.CARD_WIDTH * (Number(card.type_arg) - 1)}px 0"
+                                    ></div>
+                                `)
+                    }).join('')}
+                            </div>
+                            <div class="playertablename" id="hand_score_wrap_${currentPlayer.id}">
+                                <span class="hand_score_label"></span> <span id="hand_score_${currentPlayer.id}"></span>
+                            </div>
+                        </div>
+                    `
+                document.getElementById("hand").innerHTML = currentPlayerHandHTML;
+
+
+                let playertablesHTML = Object.values(gamedatas.players).map((player, index) => {
+                    return (`
+                    <div id="zone_${player.id}" class="playertable whiteblock">
+                        <div class="flex_row">
+                            ${player.table.map((table, index) => {
+                        return (`
+                                            <div class="flex_col" id="playertablecard_${player.id}_${index}">
+                                                ${Object.values(table).map((card, cardIndex) => {
+                            return (`
+                                                            <div 
+                                                                key="${cardIndex}" 
+                                                                class="overlap_col playertablecard_${Object.values(CARD).filter(x => Number(x.TYPE) == Number(card.type))[0]?.KEY.toLowerCase()}" 
+                                                                style="background-position: -${STATIC_VALUE.CARD_WIDTH * (Number(card.type_arg) - 1)}px 0"
+                                                            ></div>
+                                                        `)
+                        }).join('')}
+                                            </div>
+                                            `)
+                    }).join('')}    
+                        </div>
+                        <div class="flex_row playertablecard_plate">
+                            <div class="playertablecard_plate_left"></div>
+                            <div class="playertablecard_plate_right"></div>
+                        </div>
+                        <div class="playertablename" style="color:#${player.color};">
+                            ${player.name}
+                        </div>
+                    </div>
+                `)
+                }).join('');
+                document.getElementById("playertables").innerHTML = playertablesHTML;
 
                 // Setup game notifications to handle (see "setupNotifications" method below)
                 this.setupNotifications();

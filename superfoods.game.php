@@ -120,10 +120,16 @@ class SuperFoods extends Table
         }
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(5, 'deck', $player_id);
+            // DEBUGGING TABLES
+            $this->cards->pickCardsForLocation(5, 'deck', 'table_0', $player_id);
+            $this->cards->pickCardsForLocation(5, 'deck', 'table_1', $player_id);
+            $this->cards->pickCardsForLocation(5, 'deck', 'table_2', $player_id);
         }
+
         $this->cards->pickCardsForLocation(3, 'deck', 'pantry');
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
+
 
         /************ End of the game initialization *****/
     }
@@ -155,6 +161,10 @@ class SuperFoods extends Table
         $result['discard'] = $this->cards->getCardsInLocation('discard');
         foreach ($result['players'] as $player_id => $player) {
             $result['players'][$player_id]['hand'] = $this->cards->getCardsInLocation('hand', $player_id);
+            for ($i = 0; $i < 3; $i++) {
+                $table_name = sprintf('table_%d', $i);
+                $result['players'][$player_id]['table'][$i] = $this->cards->getCardsInLocation($table_name, $player_id);
+            }
         }
         $result['pantry'] = $this->cards->getCardsInLocation('pantry');
 
