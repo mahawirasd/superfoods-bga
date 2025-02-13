@@ -113,6 +113,16 @@ namespace Bga\GameFramework {
             //
         }
     }
+
+    abstract class UserPreferences {
+        /**
+         * Gets the value of a user preference for a player (cached in game DB). Null if unset.
+         */
+        function get(int $playerId, int $prefId): ?int
+        {
+            return null;
+        }
+    }
 }
 
 namespace Bga\GameFramework\Db {
@@ -120,10 +130,8 @@ namespace Bga\GameFramework\Db {
     {
         /**
          * Delete global variables.
-         *
-         * @param string[] ...$names
          */
-        public function delete(...$names): void
+        public function delete(string ...$names): void
         {
             //
         }
@@ -134,6 +142,14 @@ namespace Bga\GameFramework\Db {
         public function get(string $name, mixed $defaultValue = null): mixed
         {
             return null;
+        }
+        
+        /**
+         * Retrieve all variables stored in DB (or a selected subset, if the function is called with parameters).
+         */
+        public function getAll(string ...$names): array
+        {
+            return [];
         }
 
         /**
@@ -667,6 +683,11 @@ namespace {
         readonly public \Bga\GameFramework\Notify $notify;
 
         /**
+         * Access the underlying UserPreferences object.
+         */
+        readonly public \Bga\GameFramework\UserPreferences $userPreferences;
+
+        /**
          * Default constructor.
          */
         public function __construct()
@@ -907,6 +928,7 @@ namespace {
         /**
          * Returns the value of a user preference for a player. It will return the value currently selected in the
          * select combo box, in the top-right menu.
+         * @deprecated use $this->userPreferences->get(int $playerId, int $prefId)
          */
         final public function getGameUserPreference(int $playerId, int $prefId): ?int
         {

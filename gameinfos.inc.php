@@ -1,18 +1,16 @@
 <?php
 
 /*
-    From this file, you can edit the various meta-information of your game.
-
-    Once you modified the file, don't forget to click on "Reload game informations" from the Control Panel in order in can be taken into account.
-
-    See documentation about this file here:
-    http://en.doc.boardgamearena.com/Game_meta-information:_gameinfos.inc.php
-
+ * From this file, you can edit the various meta-information of your game.
+ *
+ * Once you modified the file, don't forget to click on "Reload game informations" from the Control Panel in order in can be taken into account.
+ *
+ * See documentation about this file here:
+ * http://en.doc.boardgamearena.com/Game_meta-information:_gameinfos.inc.php
 */
 
-$gameinfos = array(
-
-    // Name of the game in English (will serve as the basis for translation) 
+$gameinfos = [
+    // Name of the game in English (will serve as the basis for translation)
     'game_name' => "My Great Game",
 
     // Game publisher (use empty string if there is no publisher)
@@ -25,10 +23,10 @@ $gameinfos = array(
     'publisher_bgg_id' => 1234,
 
     // Board game geek ID of the game
-    'bgg_id' => 0,
+    'bgg_id' => 54321,
 
     // Players configuration that can be played (ex: 2 to 4 players)
-    'players' => array(2, 3, 4),
+    'players' => [2, 3, 4],
 
     // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
     // NB: the automatic lobby will try first the lowest number of players if this is not specified. So you _have to_ specify this parameter if the lowest player number is not compatible with the default options.
@@ -58,11 +56,11 @@ $gameinfos = array(
     // Example: 'tie_breaker_description' => totranslate( "Number of remaining cards in hand" ),
     'tie_breaker_description' => "",
 
-    // If in the game, all losers are equal (no score to rank them or explicit in the rules that losers are not ranked between them), set this to true 
+    // If in the game, all losers are equal (no score to rank them or explicit in the rules that losers are not ranked between them), set this to true
     // The game end result will display "Winner" for the 1st player and "Loser" for all other players
     'losers_not_ranked' => false,
 
-    // Allow to rank solo games for games where it's the only available mode (ex: Thermopyles). Should be left to false for games where solo mode exists in addition to multiple players mode.
+    // Allow to rank solo games for games where it's the only available mode (ex: Orchard). Should be left to false for games where solo mode exists in addition to multiple players mode.
     'solo_mode_ranked' => false,
 
     // Game is "beta". A game MUST set is_beta=1 when published on BGA for the first time, and must remains like this until all bugs are fixed.
@@ -77,7 +75,7 @@ $gameinfos = array(
     'language_dependency' => false,
 
     // Colors attributed to players
-    'player_colors' => array("ff0000", "008000", "0000ff", "ffa500", "773300"),
+    'player_colors' => ["ff0000", "008000", "0000ff", "ffa500", "773300"],
 
     // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
     // NB: this parameter is used only to flag games supporting this feature; you must use (or not use) reattributeColorsBasedOnPreferences PHP method to actually enable or disable the feature.
@@ -89,23 +87,11 @@ $gameinfos = array(
 
     // Game interface width range (pixels)
     // Note: game interface = space on the left side, without the column on the right
-    'game_interface_width' => array(
-
+    'game_interface_width' => [
         // Minimum width
         //  default: 740
         //  maximum possible value: 740 (ie: your game interface should fit with a 740px width (correspond to a 1024px screen)
         //  minimum possible value: 320 (the lowest value you specify, the better the display is on mobile)
         'min' => 740,
-    ),
-
-
-    //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
-
-    // simple : A plays, B plays, C plays, A plays, B plays, ...
-    // circuit : A plays and choose the next player C, C plays and choose the next player D, ...
-    // complex : A+B+C plays and says that the next player is A+B
-    // 'is_sandbox' => false,
-    // 'turnControl' => 'simple'
-
-    ////////
-);
+    ],
+];
