@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
@@ -14,6 +15,7 @@
  *
  * In this PHP file, you are going to defines the rules of the game.
  */
+
 declare(strict_types=1);
 
 namespace Bga\Games\SuperFoods;
@@ -22,7 +24,12 @@ require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 
 class Game extends \Table
 {
-    private static array $CARD_TYPES;
+    private $cards;
+
+    // variable that is defined from material.inc.php file
+    protected array $card_types;
+    protected array $number_card_names;
+    protected array $actions_card_names;
 
     /**
      * Your global variables labels:
@@ -43,17 +50,7 @@ class Game extends \Table
             "my_second_global_variable" => 11,
             "my_first_game_variant" => 100,
             "my_second_game_variant" => 101,
-        ]);        
-
-        self::$CARD_TYPES = [
-            1 => [
-                "card_name" => clienttranslate('Troll'), // ...
-            ],
-            2 => [
-                "card_name" => clienttranslate('Goblin'), // ...
-            ],
-            // ...
-        ];
+        ]);
 
         /* example of notification decorator.
         // automatically complete notification args when needed
@@ -69,74 +66,9 @@ class Game extends \Table
             
             return $args;
         });*/
-    }
 
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player plays a card, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     *
-     * @throws BgaUserException
-     */
-    public function actPlayCard(int $card_id): void
-    {
-        // Retrieve the active player ID.
-        $player_id = (int)$this->getActivePlayerId();
-
-        // check input values
-        $args = $this->argPlayerTurn();
-        $playableCardsIds = $args['playableCardsIds'];
-        if (!in_array($card_id, $playableCardsIds)) {
-            throw new \BgaUserException('Invalid card choice');
-        }
-
-        // Add your game logic to play a card here.
-        $card_name = self::$CARD_TYPES[$card_id]['card_name'];
-
-        // Notify all players about the card played.
-        $this->notify->all("cardPlayed", clienttranslate('${player_name} plays ${card_name}'), [
-            "player_id" => $player_id,
-            "player_name" => $this->getActivePlayerName(), // remove this line if you uncomment notification decorator
-            "card_name" => $card_name, // remove this line if you uncomment notification decorator
-            "card_id" => $card_id,
-            "i18n" => ['card_name'], // remove this line if you uncomment notification decorator
-        ]);
-
-        // at the end of the action, move to the next state
-        $this->gamestate->nextState("playCard");
-    }
-
-    public function actPass(): void
-    {
-        // Retrieve the active player ID.
-        $player_id = (int)$this->getActivePlayerId();
-
-        // Notify all players about the choice to pass.
-        $this->notify->all("pass", clienttranslate('${player_name} passes'), [
-            "player_id" => $player_id,
-            "player_name" => $this->getActivePlayerName(), // remove this line if you uncomment notification decorator
-        ]);
-
-        // at the end of the action, move to the next state
-        $this->gamestate->nextState("pass");
-    }
-
-    /**
-     * Game state arguments, example content.
-     *
-     * This method returns some additional information that is very specific to the `playerTurn` game state.
-     *
-     * @return array
-     * @see ./states.inc.php
-     */
-    public function argPlayerTurn(): array
-    {
-        // Get some values from the current game situation from the database.
-
-        return [
-            "playableCardsIds" => [1, 2],
-        ];
+        $this->cards = $this->getNew("module.common.deck");
+        $this->cards->init("card");
     }
 
     /**
@@ -157,25 +89,6 @@ class Game extends \Table
     }
 
     /**
-     * Game state action, example content.
-     *
-     * The action method of state `nextPlayer` is called everytime the current game state is set to `nextPlayer`.
-     */
-    public function stNextPlayer(): void {
-        // Retrieve the active player ID.
-        $player_id = (int)$this->getActivePlayerId();
-
-        // Give some extra time to the active player when he completed an action
-        $this->giveExtraTime($player_id);
-        
-        $this->activeNextPlayer();
-
-        // Go to another gamestate
-        // Here, we would detect if the game is over, and in this case use "endGame" transition instead 
-        $this->gamestate->nextState("nextPlayer");
-    }
-
-    /**
      * Migrate database.
      *
      * You don't have to care about this until your game has been published on BGA. Once your game is on BGA, this
@@ -188,21 +101,21 @@ class Game extends \Table
      */
     public function upgradeTableDb($from_version)
     {
-//       if ($from_version <= 1404301345)
-//       {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            $this->applyDbUpgradeToAllDB( $sql );
-//       }
-//
-//       if ($from_version <= 1405061421)
-//       {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            $this->applyDbUpgradeToAllDB( $sql );
-//       }
+        //       if ($from_version <= 1404301345)
+        //       {
+        //            // ! important ! Use DBPREFIX_<table_name> for all tables
+        //
+        //            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
+        //            $this->applyDbUpgradeToAllDB( $sql );
+        //       }
+        //
+        //       if ($from_version <= 1405061421)
+        //       {
+        //            // ! important ! Use DBPREFIX_<table_name> for all tables
+        //
+        //            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
+        //            $this->applyDbUpgradeToAllDB( $sql );
+        //       }
     }
 
     /*
@@ -227,6 +140,17 @@ class Game extends \Table
         );
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+
+        $result['deck'] = $this->cards->getCardsInLocation('deck');
+        $result['discard'] = $this->cards->getCardsInLocation('discard');
+        foreach ($result['players'] as $player_id => $player) {
+            $result['players'][$player_id]['hand'] = $this->cards->getCardsInLocation('hand', $player_id);
+            for ($i = 0; $i < 3; $i++) {
+                $table_name = sprintf('table_%d', $i);
+                $result['players'][$player_id]['table'][$i] = $this->cards->getCardsInLocation($table_name, $player_id);
+            }
+        }
+        $result['pantry'] = $this->cards->getCardsInLocation('pantry');
 
         return $result;
     }
@@ -280,7 +204,7 @@ class Game extends \Table
         // Init global values with their initial values.
 
         // Dummy content.
-        $this->setGameStateInitialValue("my_first_global_variable", 0);
+        // $this->setGameStateInitialValue("my_first_global_variable", 0);
 
         // Init game statistics.
         //
@@ -291,6 +215,37 @@ class Game extends \Table
         // $this->initStat("player", "player_teststat1", 0);
 
         // TODO: Setup the initial game situation here.
+
+        // Create cards
+        $cards = array();
+        foreach ($this->card_types as $card_type_id => $card_type) {
+            if ($card_type_id == 1) {
+                foreach ($this->number_card_names as $number_card_name_id => $number_card_name) {
+                    $cards[] = array('type' => $card_type_id, 'type_arg' => $number_card_name_id, 'nbr' => 3);
+                }
+            } else if ($card_type_id == 2) {
+                foreach ($this->actions_card_names as $actions_card_name_id => $actions_card_name) {
+                    $cards[] = array('type' => $card_type_id, 'type_arg' => $actions_card_name_id, 'nbr' => 6);
+                }
+            }
+        }
+
+        $this->cards->createCards($cards, 'deck');
+        $this->cards->shuffle('deck');
+        if (count($players) == 2) {
+            $this->cards->pickCardsForLocation(44, 'deck', 'discard');
+        } else if (count($players) == 3) {
+            $this->cards->pickCardsForLocation(21, 'deck', 'discard');
+        }
+        foreach ($players as $player_id => $player) {
+            $this->cards->pickCards(5, 'deck', $player_id);
+            // DEBUGGING TABLES
+            $this->cards->pickCardsForLocation(5, 'deck', 'table_0', $player_id);
+            $this->cards->pickCardsForLocation(5, 'deck', 'table_1', $player_id);
+            $this->cards->pickCardsForLocation(5, 'deck', 'table_2', $player_id);
+        }
+
+        $this->cards->pickCardsForLocation(3, 'deck', 'pantry');
 
         // Activate first player once everything has been initialized and ready.
         $this->activeNextPlayer();
@@ -318,11 +273,10 @@ class Game extends \Table
 
         if ($state["type"] === "activeplayer") {
             switch ($state_name) {
-                default:
-                {
-                    $this->gamestate->nextState("zombiePass");
-                    break;
-                }
+                default: {
+                        $this->gamestate->nextState("zombiePass");
+                        break;
+                    }
             }
 
             return;

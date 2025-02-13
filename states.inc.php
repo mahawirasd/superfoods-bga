@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
@@ -69,11 +70,13 @@ $machinestates = [
         "description" => clienttranslate('${actplayer} must play a card or pass'),
         "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
         "type" => "activeplayer",
-        "args" => "argPlayerTurn",
+        // "args" => "argPlayerTurn",
         "possibleactions" => [
             // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
-            "actPlayCard", 
-            "actPass",
+            // "actPlayCard", 
+            // "actPass",
+            "playCard",
+            "pass"
         ],
         "transitions" => ["playCard" => 3, "pass" => 3]
     ],
@@ -98,6 +101,3 @@ $machinestates = [
     ],
 
 ];
-
-
-
